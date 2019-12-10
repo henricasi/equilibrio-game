@@ -1,0 +1,15 @@
+canvas {
+    border: solid 1px lightgray;
+}
+
+#hit {
+    display: none;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 80px 0;
+}
