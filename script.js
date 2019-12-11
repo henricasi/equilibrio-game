@@ -4,12 +4,15 @@ const ctx = balanceCanvas.getContext('2d');
 // constants
 const colorsArr = ['rgb(165,42,42)', 'rgb(255,215,0)', 'rgb(255,223,179)', 'rgb(255,176,115)', 'rgb(224,179,225)', 'rgb(255,84,142)', 'rgb(255,121,61)', 'rgb(255,91,87)', 'rgb(255,87,168)', 'rgb(255,242,104)', 'rgb(255,178,126)', 'rgb(255,78,55)'];
     // active area (right plate)
-const xMin = 750;
-const xMax = 910;
+const xMin = 740;
+const xMax = 920;
 const xMiddle = 830;
-const activeAreaMaxWidth = 160;
+const activeAreaMaxWidth = 180;
 // ZERAR ISSO ao começar nova fase
-let activeAreaCurrentWidth = 0;
+let activeAreaRowsCurrentWidth = [0, 0, 0];
+
+// for reference
+let activeAreaRowsFutureWidth = [0, 0, 0];
 
 
 
@@ -71,14 +74,8 @@ let weightRulesStage2 = [];
 let weightRulesStage3 = []; // complete later
 
 
-// inactive weights circunference:
-//          x     y   r    a0    a1
-// ctx.arc(700, 280, 310, 0, Math.PI*2);
-
-
 class Weight {
     constructor(rule, rulesLength) {
-        // aqui eu quero que o parametro seja só um array? e as propriedades vão pegando dados dos objs?
         this.color = chooseColor();
         this.mass = rule.mass;
         this.position = rule.id + 1;
@@ -91,14 +88,14 @@ class Weight {
             let randomHeight = this.mass*6 - randomWidth;
             return {width: randomWidth, height: randomHeight};
         }
-
         let dimensions = shapeWeight();
-        console.log(dimensions);
         this.width = dimensions.width;
         this.height = dimensions.height;
+
         this.numOfPositions = rulesLength - 1;
         this.angle = (Math.PI*2/this.numOfPositions)*this.position;
         this.angleModifier = 2;
+
         // calculate x and y for circunference positioning
         this.x = (700 + 270 * Math.cos(this.angle)) - this.width/2;
         this.y = (280 + 270 * Math.sin(this.angle)) - this.width/2;
@@ -131,33 +128,83 @@ class Weight {
     }
 }
 
+// create array which manages active weights (weights are added or removed on click)
+let activeWeights = [];
+
 const updateActiveWeights = (weightsArr) => {
-    // create array with active weights only
-    let activeWeights = weightsArr.filter(weight => weight.active)
-    // determine max height of active weights
+    // determine max height of active weights per row
     let activeWeightsHeights = [];
-    activeWeights.forEach(weight => activeWeightsHeights.push(weight.height));
-    let activeMaxHeight;
+    activeWeights.forEach(weight => activeWeightsHeights.push({row: weight.row, height: weight.height}));
+
+    let rowHeights = [0, 0, 0];
     if (activeWeights.length > 0) {
-        activeMaxHeight = activeWeightsHeights.reduce((a,b) => Math.max(a,b));
+        let rowZeroHeights = [];
+        let rowOneHeights = [];
+        let rowTwoHeights = [];
+        activeWeightsHeights.forEach(elem => {
+            switch (elem.row) {
+                case 0:
+                    rowZeroHeights.push(elem.height);
+                    break;
+                case 1:
+                    rowOneHeights.push(elem.height);
+                    break;
+                case 2:
+                    rowTwoHeights.push(elem.height);
+                    break;
+            }
+        })
+        if (rowZeroHeights.length > 0) rowHeights[0] = rowZeroHeights.reduce((a,b) => Math.max(a,b));
+        if (rowOneHeights.length > 0)rowHeights[1] = rowOneHeights.reduce((a,b) => Math.max(a,b));
+        if (rowTwoHeights.length > 0)rowHeights[2] = rowTwoHeights.reduce((a,b) => Math.max(a,b));
+    }
+
+    // checks is future total width is greater than limit, breaks up into rows
+    for (let i = 0; i < activeAreaRowsFutureWidth.length; i += 1)
+    if (activeAreaRowsFutureWidth[i] > 200) {
+        // o que fazer aqui?
     }
     
     // stores sum of previous widths for positioning next weight
-    let previousWidths = 0;
+    let previousWidths = [0, 0, 0];
 
     for (let i = 0; i < activeWeights.length; i += 1) {
         let yOffset = scale.massRight - scale.massLeft;
-        if (i === 0) {
-            ctx.fillStyle = activeWeights[i].color;
-            ctx.fillRect(xMiddle - activeAreaCurrentWidth/2, 350 + yOffset -activeWeights[i].height, activeWeights[i].width, activeWeights[i].height);    
-        } else {
-            ctx.fillStyle = activeWeights[i].color;
-            ctx.fillRect(xMiddle - activeAreaCurrentWidth/2 + previousWidths,350 + yOffset - activeWeights[i].height, activeWeights[i].width,activeWeights[i].height);
+        switch (activeWeights[i].row) {
+            case 0:
+                ctx.fillStyle = activeWeights[i].color;
+                ctx.fillRect(xMiddle - activeAreaRowsCurrentWidth[0]/2 + previousWidths[0], 350 + yOffset - activeWeights[i].height, activeWeights[i].width, activeWeights[i].height);
+                break;
+            case 1:
+                ctx.fillStyle = activeWeights[i].color;
+                ctx.fillRect(xMiddle - activeAreaRowsCurrentWidth[1]/2 + previousWidths[1], 350 + yOffset - activeWeights[i].height - rowHeights[0], activeWeights[i].width, activeWeights[i].height);
+                break;
+            case 2:
+                ctx.fillStyle = activeWeights[i].color;
+                ctx.fillRect(xMiddle - activeAreaRowsCurrentWidth[2]/2 + previousWidths[2], 350 + yOffset - activeWeights[i].height - rowHeights[0] - rowHeights[1], activeWeights[i].width, activeWeights[i].height);
+                break;
         }
+
+        //resolver isso num switch
+
         // update previous widths
-        previousWidths += activeWeights[i].width;
+        switch (activeWeights[i].row) {
+            case 0:
+                previousWidths[0] += activeWeights[i].width;
+                break;
+            case 1:
+                previousWidths[1] += activeWeights[i].width;
+                break;
+            case 2:
+                previousWidths[2] += activeWeights[i].width;
+                break;
+        }
+        
     }
-    
+    // end for loop
+    previousWidthsRowOne = 0;
+    previousWidthsRowTwo = 0;
+    previousWidthsRowThree = 0;
 }
 
 
@@ -276,8 +323,25 @@ class Scale {
 
 
 
-class Monk {
+class Yogi {
+    constructor() {
+        this.head = new Image();
+        this.head.src = "./images/yogihead.png"
+        this.body = new Image();
+        this.body.src = "./images/yogi.png"
+        this.hand = new Image();
+        this.hand.src = "./images/okhand.png"
 
+        this.expression = ['frustrated', 'regular', 'pleased']
+    }
+
+    drawNextStageHand() {
+
+    }
+    
+    drawPleasedYogi() {
+
+    }
 }
 
 // START HIT AREA CODE
@@ -300,14 +364,51 @@ balanceCanvas.addEventListener('click', (e) => {
         if (hasSameColor(color, weight) && weight.position !== 0) {
             console.log('click on weight: ' + weight.position);
             weight.active = !weight.active;
+            
             if (weight.active) {
                 scale.massRight += weight.mass;
-                activeAreaCurrentWidth += weight.width;
+                switch (weight.row) {
+                    case 0:
+                        activeAreaRowsFutureWidth[0] = activeAreaRowsCurrentWidth[0] + weight.width;
+                        if (activeAreaRowsFutureWidth[0] > activeAreaMaxWidth) {
+                            weight.row +=1;
+                            activeAreaRowsFutureWidth[1] = activeAreaRowsCurrentWidth[1] + weight.width;
+                            if (activeAreaRowsFutureWidth[1] > activeAreaMaxWidth) {
+                                weight.row +=1;
+                                activeAreaRowsCurrentWidth[2] += weight.width;
+                            } else {
+                                activeAreaRowsCurrentWidth[1] += weight.width;
+                            }
+                        } else {
+                            activeAreaRowsCurrentWidth[0] += weight.width;
+                        }
+                        break;
+                    case 1:
+                        activeAreaRowsFutureWidth[1] = activeAreaRowsCurrentWidth[1] + weight.width;
+                        if (activeAreaRowsFutureWidth[1] > activeAreaMaxWidth) {
+                                weight.row +=1;
+                                activeAreaRowsCurrentWidth[2] += weight.width;
+                        } else {
+                            activeAreaRowsCurrentWidth[1] += weight.width;
+                        }
+                        break;
+                    case 2:
+                        activeAreaRowsCurrentWidth[2] += weight.width;
+                        break;
+                }
+                // add to active array
+                activeWeights.push(weight);
+
             } else {
                 scale.massRight -= weight.mass;
-                activeAreaCurrentWidth -= weight.width;
+                let weightRow = weight.row;
+                activeAreaRowsCurrentWidth[weightRow] -= weight.width;
+                // reset row property
+                weight.row = 0;
+
+                // remove from active array
+                activeWeights = activeWeights.filter(elem => elem.position !== weight.position);
             }
-            
         }
     });
  });
@@ -342,51 +443,23 @@ const startGame = () => {
     scale.start();
 }
 
+const drawNextStageHand = () => {
+    //draws hand,
+    //makes it clickable
+    // if clickable, starts next stage
+}
+
 const checkIfWin = () => {
     if (scale.massLeft === scale.massRight) {
-        console.log('this is wrong!')
         cancelAnimationFrame(canvasAnimation);
         scale = {};
         currentStageWeightsArr = [];
+        activeAreaRowsCurrentWidth = [0, 0, 0];
+        // make sure these exist!
+        yogi.drawNextStageHand();
+        yogi.drawPleasedYogi();
     }
-    // if win, clears interval
-    // clearInterval(scale.interval);
-    // if goes to next stage, resets scale and weights array
-
 }
-
-// let requestId;
-// // LOOP CONTROL Object
-// const loopControl = {
-//   start() {
-//     if (!requestId) {
-//       requestId = window.requestAnimationFrame(update);
-//       // return requestId;
-//     }
-//   },
-
-//   stop() {
-//     if (requestId) {
-//       console.log('hello, stop');
-//       window.cancelAnimationFrame(requestId);
-//       requestId = undefined;
-//     }
-//   },
-
-//   clear() {
-//     ctx.clearRect(0, 0, balanceCanvas.width, balanceCanvas.height);
-//   }
-// };
-
-// const update = (runtime) => {
-//   requestId = undefined;
-//   loopControl.clear();
-//   console.log(runtime); // log in each frame for how long the game is running in milliseconds
-
-//   // call loopControl.start() or loopControl.stop() in the end
-//   loopControl.start();
-// }
-
 
 let canvasAnimation;
 
