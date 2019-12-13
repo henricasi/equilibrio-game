@@ -2,7 +2,7 @@
 
 ![Title screen](images/title-screen.png)
 
-This is a small puzzle game made as Project 1 of Web Development Course at **Ironhack São Paulo**.
+This is a short puzzle game made as Project 1 of Web Development Course at **Ironhack São Paulo**.
 
 Help the yogi concentrate by balancing the scale in his head.
 
