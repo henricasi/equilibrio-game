@@ -56,5 +56,5 @@ Feel free to contribute in any way you want! Just fork this project, create a ne
  
 ## Planned improvements
 
-- [ ] Add mobile compatibilty
-- [ ] Add responsiveness
+- * Add mobile compatibilty
+- * Add responsiveness
