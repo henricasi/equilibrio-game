@@ -27,6 +27,7 @@ There are five stages to go through. Use your focus and balancing skills to get 
 
 * HTML Canvas element, JavaScript and a touch of CSS
 * Yogi image provided by [Freepik](www.freepik.com)
+* Region detection on click taken from [Lavrton](https://lavrton.com/hit-region-detection-for-html5-canvas-and-how-to-listen-to-click-events-on-canvas-shapes-815034d7e9f8/)
 * Color selection made easier with [Coolors](www.coolors.com)
 
 ## Release History
@@ -52,7 +53,7 @@ There are five stages to go through. Use your focus and balancing skills to get 
     * Draw canvas and objects (scale, weights)
 
 ## Contributing
-Feel free to contribute in any way you want! Just fork this project, create a new branch for your feature and do a pull request after commiting your changes.
+Feel free to contribute in any way you want! Just fork this project, create a new branch for your features and do a pull request after commiting your changes.
  
 ## Planned improvements
 
