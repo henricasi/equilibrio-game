@@ -7,7 +7,7 @@ ctx.textBaseline = "hanging";
 
 
 // constants
-const colorsArr = ['rgb(165,42,42)', 'rgb(255,88,76)', 'rgb(255,223,179)', 'rgb(255,176,115)', 'rgb(224,179,225)', 'rgb(255,84,142)', 'rgb(255,121,61)', 'rgb(255,91,87)', 'rgb(255,87,168)', 'rgb(255,242,104)', 'rgb(255,178,126)', 'rgb(255,78,55)'];
+const colorsArr = ['rgb(165,42,42)', 'rgb(255,88,76)', 'rgb(255,223,179)', 'rgb(255,176,115)', 'rgb(224,179,225)', 'rgb(255,84,142)', 'rgb(255,121,61)', 'rgb(255,91,87)', 'rgb(191,119,151)', 'rgb(237,238,130)', 'rgb(255,178,126)', 'rgb(255,78,55)'];
     // active area (right plate)
 const xMin = 740;
 const xMax = 920;
@@ -204,10 +204,12 @@ const weightRulesStage5 = [
 let scale = {};
 let currentStage = 0;
 let stageWon = false;
+let gameOver = false;
 let currentStageWeightsArr = [];
 let activeWeights = [];
 let activeAreaRowsCurrentWidth = [0, 0, 0];
 let activeAreaRowsFutureWidth = [0, 0, 0];
+let canvasAnimation;
 
 
 // select random color
@@ -306,7 +308,7 @@ const updateActiveWeights = (weightsArr) => {
         if (rowTwoHeights.length > 0) rowHeights[2] = rowTwoHeights.reduce((a,b) => Math.max(a,b));
     }
     
-    // stores sum of previous widths for positioning next weight
+    // store sum of previous widths for positioning next weight
     let previousWidths = [0, 0, 0];
 
     for (let i = 0; i < activeWeights.length; i += 1) {
@@ -338,8 +340,7 @@ const updateActiveWeights = (weightsArr) => {
                 break;
         }
         
-    }
-    // end for loop
+    } // end for loop
     previousWidthsRowOne = 0;
     previousWidthsRowTwo = 0;
     previousWidthsRowThree = 0;
@@ -355,8 +356,12 @@ class Scale {
 
     drawBackground() {
         if (stageWon) {
-            ctx.fillStyle = '#E2D3DE' // change this
+            ctx.fillStyle = '#F2D8D5'
             ctx.fillRect(0, 0, 1400, 700);
+            ctx.fillStyle = '#9BBDFF'
+            ctx.beginPath();
+            ctx.arc(700, 280, 310, 0, Math.PI*2);
+            ctx.fill();
         } else {
             switch (currentStage) {
                 case 0:
@@ -368,25 +373,23 @@ class Scale {
                     ctx.fillRect(0, 0, 1400, 700);
                     break;
                 case 2:
-                    ctx.fillStyle = '#8BA9E5' // change this color
+                    ctx.fillStyle = '#8BA9E5'
                     ctx.fillRect(0, 0, 1400, 700);
                     break;
                 case 3:
-                    ctx.fillStyle = '#748DBF' // change this color
+                    ctx.fillStyle = '#748DBF'
                     ctx.fillRect(0, 0, 1400, 700);
                     break;
                 case 4:
-                    ctx.fillStyle = '#7A87C9' // change this color
+                    ctx.fillStyle = '#7A87C9'
                     ctx.fillRect(0, 0, 1400, 700);
                     break;
                 case 5:
-                    ctx.fillStyle = '#5B72E5' // change this color
+                    ctx.fillStyle = '#5B72E5'
                     ctx.fillRect(0, 0, 1400, 700);
                     break;
                 case 6:
-
-                    //draw play again?
-                    ctx.fillStyle = '#74A4FF' // change color!!
+                    ctx.fillStyle = '#FAD7BB'
                     ctx.fillRect(0, 0, 1400, 700);
 
             }
@@ -395,7 +398,7 @@ class Scale {
 
     drawTitle() {
         if (currentStage === 0) {
-            const title = ['e','q','u','i','l','i','b','r','i','o'];
+            const title = ['e','q','u','i','l','í','b','r','i','o'];
             ctx.font = "60px Libre Baskerville";
             ctx.fillStyle = "#3E4E50";
             for (let i = 0; i < 10; i += 1) {
@@ -404,14 +407,20 @@ class Scale {
                 ctx.fillText(title[i], x, y);
             }
             ctx.font = "20px Libre Baskerville";
-            ctx.fillStyle = "#959E9F"; // shade of gray here
+            ctx.fillStyle = "#959E9F";
             ctx.fillText("c l i c k   a n y w h e r e   t o   b e g i n", 505, 630);
         } else if (currentStage === 6) {
-            //draw title balanced
             ctx.font = "60px Libre Baskerville";
             ctx.textBaseline = "hanging";
             ctx.fillStyle = "#3E4E50";
-            ctx.fillText("e  q  u  i  l  i  b  r  i  o", 390, 300);
+            ctx.fillText("e  q  u  i  l  í  b  r  i  o", 390, 270);
+            ctx.font = "18px Libre Baskerville";
+            ctx.fillText("henrique casimiro", 1154, 500);
+            ctx.fillText("são paulo - brasil", 1165, 530);
+            ctx.fillText("2019", 1279, 560);
+            ctx.font = "24px Libre Baskerville";
+            ctx.fillStyle = "#334042";
+            ctx.fillText("p l a y   a g a i n?", 1130, 610);
         }
     }
 
@@ -523,14 +532,10 @@ class Yogi {
         this.hand.src = "./images/okhand.png"
         this.happy = new Image();
         this.happy.src = "./images/happy.png"
+        this.focusedExpression = new Image();
+        this.focusedExpression.src = "./images/focused2.png";
     }
 
-    // drawNextStageHand() {
-    //     if (stageWon) {
-    //         ctx.drawImage(this.hand, 960, 100, 500, 800);
-    //     }
-    // }
-    
     drawYogi() {
         if (stageWon) {
             ctx.drawImage(this.happy, 455, 285, 500, 500);
@@ -554,23 +559,15 @@ class Yogi {
     }
 
     drawYogiExpression() {
-        let yOffset = scale.massRight - scale.massLeft;
-        if (!stageWon) {
-            if (yOffset < 0) {
-                yOffset *= -1;
-            }
-            if (yOffset > 40) {
-                // frustrated
-            } else if (yOffset > 20) {
-                // concentrated
-            } else {
-                // almost there!
-            }
+        if (!stageWon && currentStage > 0 && currentStage != 6) {
+            ctx.drawImage(this.focusedExpression, 0, 0, this.focusedExpression.width, this.focusedExpression.height - 90);
         }
     }
 }
 
-// START HIT AREA CODE
+let yogi = new Yogi;
+
+// START MOUSE CLICK CODE
 
 const hasSameColor = (color, weight) => weight.color === color;
 
@@ -588,11 +585,12 @@ balanceCanvas.addEventListener('click', (e) => {
     // find a weight with the same colour
     currentStageWeightsArr.forEach(weight => {
         if (hasSameColor(color, weight) && weight.position !== 0 && !stageWon) {
-            console.log('click on weight: ' + weight.position);
+            // change weight state
             weight.active = !weight.active;
             // add to right plate rows
             if (weight.active) {
                 scale.massRight += weight.mass;
+                //tricky part: determe on which vertical row it will be drawn
                 switch (weight.row) {
                     case 0:
                         activeAreaRowsFutureWidth[0] = activeAreaRowsCurrentWidth[0] + weight.width;
@@ -637,19 +635,25 @@ balanceCanvas.addEventListener('click', (e) => {
         }
     });
 
+    // start game on title screen
     if (currentStage === 0) {
         nextStage();
-        // stageWon = true;
     }
     
+    // move to next stage
     if (stageWon && currentStage < 6) {
+        nextStage();
+    }
+
+    // play again
+    if (gameOver) {
+        currentStage = 0;
         nextStage();
     }
 
  });
 
-// END HIT AREA CODE
-
+// END MOUSE CLICK CODE
 
 const createScale = (weightRulesArr) => {
     scale = new Scale(weightRulesArr);
@@ -661,8 +665,6 @@ const createWeights = (weightRulesArr) => {
         currentStageWeightsArr.push(new Weight(rule, weightRulesArr.length));
     })
 }
-
-let yogi = new Yogi;
 
 const startGame = () => {
     createScale(weightRulesStage0);
@@ -699,45 +701,50 @@ const nextStage = () => {
             createScale(weightRulesStage5);
             createWeights(weightRulesStage5);
             break;
+        case 6:
+            createScale(weightRulesStage0);
+            createWeights(weightRulesStage0);
+            break;
+            
     }
-    // fix first weight color DO I KEEP THIS?
+    // fix first weight color
     currentStageWeightsArr[0].color = '#B24747';   
 }
 
 
 
 const checkIfWin = () => {
-    if (scale.massLeft === scale.massRight && currentStage > 0) {
+    if (currentStage === 6) {
+        stageWon = false;
+        gameOver = true;
+    } else if (scale.massLeft === scale.massRight && currentStage > 0) {
         stageWon = true;
     }
 }
 
-let canvasAnimation;
 
-// my engine; called by requestAnimationFrame
+// my engine; called recursively by requestAnimationFrame
 const updateGame = () => {
     scale.frames += 1;
-    // clears canvas
+    // clear canvas
     scale.clearCanvas();
-    // draws background
+    // draw background
     scale.drawBackground();
     yogi.drawYogi();
     scale.drawTitle();
     yogi.drawYogiExpression();
     updateActiveWeights(currentStageWeightsArr);
-    // draws the scale
+    // draw the scale
     scale.drawScale();
-    // draws inactive weights
+    // draw inactive weights
     currentStageWeightsArr.forEach(weight => {
         weight.updateWheelPosition();
         weight.updateInactiveWeight();
     })
-    // checks if balance was achieved
+    // check if balance was achieved
     checkIfWin();
     canvasAnimation = requestAnimationFrame(updateGame);
 }
 
-startGame();
 
-// ALGUM LUGAR TEM QUE CHAMAR
-// cancelAnimationFrame(canvasAnimation);
+startGame();
