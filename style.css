@@ -1,3 +1,7 @@
+body {
+    font-family: 'Libre Baskerville', serif;
+}
+
 canvas {
     border: solid 1px lightgray;
 }
