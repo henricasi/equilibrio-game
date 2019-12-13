@@ -3,10 +3,6 @@ body {
     background-color: #F9E6D6;
 }
 
-#hit {
-    display: none;
-}
-
 .container {
     display: flex;
     flex-direction: column;
