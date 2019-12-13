@@ -1,9 +1,6 @@
 body {
     font-family: 'Libre Baskerville', serif;
-}
-
-canvas {
-    border: solid 1px lightgray;
+    background-color: #F9E6D6;
 }
 
 #hit {
