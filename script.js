@@ -647,6 +647,7 @@ balanceCanvas.addEventListener('click', (e) => {
 
     // play again
     if (gameOver) {
+        gameOver = false;
         currentStage = 0;
         nextStage();
     }
