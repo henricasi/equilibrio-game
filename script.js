@@ -578,7 +578,6 @@ balanceCanvas.addEventListener('click', (e) => {
     };
     // get pixel under cursor
     const pixel = ctx.getImageData(mousePos.x, mousePos.y, 1, 1).data;
-    console.log(pixel);
     // create rgb color for that pixel
     const color = `rgb(${pixel[0]},${pixel[1]},${pixel[2]})`;
 
