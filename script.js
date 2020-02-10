@@ -746,5 +746,19 @@ const updateGame = () => {
     canvasAnimation = requestAnimationFrame(updateGame);
 }
 
+// keep canvas same size on all windows and zoom levels
+const resize = () => {
+	let height = (window.innerHeight * 0.8);
+	
+	let ratio = balanceCanvas.width/balanceCanvas.height;
+	let width = height * ratio;
+	
+	balanceCanvas.style.width = width+'px';
+    balanceCanvas.style.height = height+'px';
+}
+
+window.addEventListener('load', resize, false);
+window.addEventListener('resize', resize, false);
+
 
 startGame();
