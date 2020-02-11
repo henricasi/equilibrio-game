@@ -11,8 +11,6 @@ Help the yogi concentrate by balancing the scale in his head.
 
 To run the game, [click here](https://henricasi.github.io/equilibrio-game/). Alternatively, clone or download this project and open the index.html file in your browser.
 
-You may have to zoom out your page. Responsiveness is coming in a future update!
-
 :warning: This game is not yet compatible with mobile. You'll have to run it on a computer.
 
 ## How to play
